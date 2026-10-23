@@ -1,21 +1,32 @@
 import site from "@/site.config";
 import { href } from "@/lib/i18n";
+import { getJSON } from "@/lib/api";
+
+export const revalidate = 3600;
 
 const PAGES = [
-  ["/", 1, "daily"], ["/doctors", 0.9, "daily"], ["/medicine", 0.9, "daily"], ["/caregiver", 0.9, "weekly"],
-  ["/about", 0.5, "monthly"], ["/contact", 0.5, "monthly"],
+  ["/", 1, "daily"], ["/doctors", 0.9, "daily"], ["/medicine", 0.8, "daily"], ["/caregiver", 0.8, "weekly"],
+  ["/about", 0.4, "monthly"], ["/contact", 0.4, "monthly"],
   ["/privacy", 0.2, "yearly"], ["/terms", 0.2, "yearly"], ["/delete-account", 0.2, "yearly"],
 ];
 
-export default function sitemap() {
-  const now = new Date();
-  return PAGES.flatMap(([path, priority, changeFrequency]) =>
-    ["bn", "en"].map((lang) => ({
-      url: `${site.url}${href(lang, path)}`,
-      lastModified: now,
-      changeFrequency,
-      priority: lang === "bn" ? priority : Math.round(priority * 8) / 10,
-      alternates: { languages: { "bn-BD": `${site.url}${href("bn", path)}`, en: `${site.url}${href("en", path)}` } },
-    })),
-  );
+function both(path, priority, changeFrequency, lastModified = new Date()) {
+  return ["bn", "en"].map((lang) => ({
+    url: `${site.url}${href(lang, path)}`,
+    lastModified, changeFrequency,
+    priority: lang === "bn" ? priority : Math.round(priority * 8) / 10,
+    alternates: { languages: { "bn-BD": `${site.url}${href("bn", path)}`, en: `${site.url}${href("en", path)}` } },
+  }));
+}
+
+/** Every public page, including each specialty, specialty + district, and doctor (from the backend). */
+export default async function sitemap() {
+  const out = PAGES.flatMap(([p, pr, f]) => both(p, pr, f));
+  const map = await getJSON("/api/doctors/sitemap", { fallback: null, timeoutMs: 20000 });
+  if (map) {
+    for (const s of map.specialties) out.push(...both(`/doctors/${s}`, 0.8, "weekly"));
+    for (const c of map.specialtyDistricts) out.push(...both(`/doctors/${c.specialty}/${c.district}`, 0.7, "weekly"));
+    for (const d of map.doctors) out.push(...both(`/doctor/${d.slug}`, 0.6, "monthly", d.updatedAt ? new Date(d.updatedAt) : new Date()));
+  }
+  return out;
 }

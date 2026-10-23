@@ -1,20 +1,25 @@
 import { notFound } from "next/navigation";
-import "@fontsource/hind-siliguri/400.css";
-import "@fontsource/hind-siliguri/500.css";
-import "@fontsource/hind-siliguri/600.css";
-import "@fontsource/noto-serif-bengali/700.css";
+import "@fontsource/noto-sans-bengali/400.css";
+import "@fontsource/noto-sans-bengali/500.css";
+import "@fontsource/noto-sans-bengali/600.css";
+import "@fontsource/noto-sans-bengali/700.css";
+import "@fontsource/noto-sans-bengali/800.css";
 import "../globals.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import DesktopHeader from "@/components/DesktopHeader";
+import TabBar from "@/components/TabBar";
+import SiteFooter from "@/components/SiteFooter";
 import site from "@/site.config";
 import { LANGS, isLang } from "@/lib/i18n";
 import { dict } from "@/lib/dict";
+import { t } from "@/lib/appText";
 import { JsonLd, organizationLd } from "@/lib/seo";
 
 export function generateStaticParams() {
   return LANGS.map((lang) => ({ lang }));
 }
-export const dynamicParams = false;
+// Unknown languages are rejected below with notFound(); keeping params dynamic lets
+// new doctor pages render on first visit in both languages.
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }) {
   const { lang } = await params;
@@ -24,22 +29,32 @@ export async function generateMetadata({ params }) {
     title: { default: name, template: `%s | ${name}` },
     applicationName: name,
     formatDetection: { telephone: false },
+    appleWebApp: { capable: true, title: name, statusBarStyle: "default" },
   };
 }
 
-export const viewport = { themeColor: "#0d9488", width: "device-width", initialScale: 1 };
+export const viewport = { themeColor: "#FFFFFF", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default async function RootLayout({ children, params }) {
   const { lang } = await params;
   if (!isLang(lang)) notFound();
-  const t = dict(lang);
+  const d = dict(lang);
+  const L = {
+    brand: site.name[lang], navLabel: d.menu, langSwitch: d.langSwitch,
+    home: t(lang, "tabHome"), doctor: t(lang, "wantDoctor"), medicine: t(lang, "wantMedicine"), caregiver: t(lang, "wantCaregiver"),
+    cart: t(lang, "tabCart"), activity: t(lang, "tabActivity"), profile: t(lang, "tabProfile"),
+    homeLabel: t(lang, "tabHome"), cartLabel: t(lang, "tabCart"), activityLabel: t(lang, "tabActivity"), tabsLabel: d.menu,
+  };
   return (
     <html lang={lang === "bn" ? "bn-BD" : "en"}>
       <body>
-        <a href="#main" className="skip">{t.skip}</a>
-        <Header lang={lang} />
-        <main id="main">{children}</main>
-        <Footer lang={lang} />
+        <a href="#main" className="skip">{d.skip}</a>
+        <div className="page">
+          <DesktopHeader lang={lang} L={L} phone={site.phone} phoneDisplay={site.phoneDisplay[lang]} />
+          <main id="main">{children}</main>
+          <SiteFooter lang={lang} />
+          <TabBar lang={lang} L={L} />
+        </div>
         <JsonLd data={organizationLd(lang)} />
       </body>
     </html>

@@ -1,18 +1,18 @@
 import Link from "next/link";
-import Image from "next/image";
+import Icon from "@/components/Icon";
 import { dict } from "@/lib/dict";
 
-// Next does not pass params to not-found; Bangla is the site's main language.
+// Next does not pass params here; Bangla is the main language, English underneath.
 export default function NotFound() {
   const t = dict("bn"), e = dict("en");
   return (
-    <div className="wrap soon-page">
-      <Image src="/img/support.webp" alt="" width={220} height={220} />
-      <h1>{t.notFoundTitle}</h1>
-      <p>{t.notFoundBody}<br /><span lang="en">{e.notFoundBody}</span></p>
-      <div className="actions">
+    <div className="body">
+      <div className="empty">
+        <span className="icircle tone-muted" style={{ width: 72, height: 72 }}><Icon name="search-outline" size={32} /></span>
+        <h2>{t.notFoundTitle}</h2>
+        <p>{t.notFoundBody}<br /><span lang="en">{e.notFoundBody}</span></p>
         <Link href="/" className="btn btn-primary">{t.backHome}</Link>
-        <Link href="/en" className="btn btn-ghost" lang="en">{e.backHome}</Link>
+        <Link href="/en" lang="en" style={{ marginTop: 14, color: "var(--primary)", fontWeight: 700 }}>{e.backHome}</Link>
       </div>
     </div>
   );

@@ -1,16 +1,15 @@
 import SoonPage from "@/components/SoonPage";
 import { dict } from "@/lib/dict";
+import { t } from "@/lib/appText";
 import { pageMeta } from "@/lib/seo";
 
-// Phase 1 placeholder — replaced by the full section in a later phase.
+// Placeholder until this section's phase is delivered.
 export async function generateMetadata({ params }) {
   const { lang } = await params;
-  const s = dict(lang).svc.medicine;
-  return pageMeta({ lang, path: "/medicine", title: s.t, description: s.d });
+  return pageMeta({ lang, path: "/medicine", title: t(lang, "wantMedicine"), description: dict(lang).svc.medicine.d });
 }
 
 export default async function Page({ params }) {
   const { lang } = await params;
-  const s = dict(lang).svc.medicine;
-  return <SoonPage lang={lang} name={s.t} img="medicine" body={s.d} />;
+  return <SoonPage lang={lang} title={t(lang, "wantMedicine")} img="medicine" tone="accent" body={dict(lang).svc.medicine.d} />;
 }
