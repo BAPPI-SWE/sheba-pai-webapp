@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import CIcon from "@/components/CIcon";
 import { splitPath } from "@/lib/paths";
+import { useCart } from "@/lib/client/cart";
 
 const TABS = [
   ["/", "home", "homeLabel"],
@@ -16,6 +17,7 @@ const TABS = [
  */
 export default function TabBar({ lang, L }) {
   const { path } = splitPath(usePathname());
+  const { itemCount } = useCart();
   if (!TABS.some(([p]) => p === path)) return null;
   const to = (p) => (lang === "en" ? (p === "/" ? "/en" : `/en${p}`) : p);
   return (
@@ -28,7 +30,7 @@ export default function TabBar({ lang, L }) {
             return (
               <li key={p}>
                 <Link href={to(p)} className="tab" aria-current={on ? "page" : undefined}>
-                  <span className="tab-icon"><CIcon name={on ? icon : `${icon}-outline`} size={23} /></span>
+                  <span className="tab-icon"><CIcon name={on ? icon : `${icon}-outline`} size={23} />{p === "/cart" && itemCount > 0 && <span className="tab-badge">{itemCount > 99 ? "99+" : itemCount}</span>}</span>
                   {L[key]}
                 </Link>
               </li>

@@ -28,5 +28,16 @@ export default async function sitemap() {
     for (const c of map.specialtyDistricts) out.push(...both(`/doctors/${c.specialty}/${c.district}`, 0.7, "weekly"));
     for (const d of map.doctors) out.push(...both(`/doctor/${d.slug}`, 0.6, "monthly", d.updatedAt ? new Date(d.updatedAt) : new Date()));
   }
+  // Medicines and generics — needs the backend's /api/medicines/sitemap (added in phase 3).
+  const [meds, cats] = await Promise.all([
+    getJSON("/api/medicines/sitemap", { fallback: null, timeoutMs: 20000 }),
+    getJSON("/api/categories", { fallback: [] }),
+  ]);
+  out.push(...both("/medicine/generics", 0.6, "weekly"));
+  for (const c of Array.isArray(cats) ? cats : []) out.push(...both(`/medicine/category/${c.slug}`, 0.7, "weekly"));
+  if (meds) {
+    for (const g of meds.generics) out.push(...both(`/generic/${g.slug}`, 0.7, "monthly", g.updatedAt ? new Date(g.updatedAt) : new Date()));
+    for (const m of meds.medicines) out.push(...both(`/medicine/${m.slug}`, 0.7, "weekly", m.updatedAt ? new Date(m.updatedAt) : new Date()));
+  }
   return out;
 }

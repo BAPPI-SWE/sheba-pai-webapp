@@ -7,7 +7,7 @@ import Icon from "@/components/Icon";
  * (with breadcrumbs above it).
  *   crumbs: [{ href, label }] — desktop only, also used for Google breadcrumbs
  */
-export default function Screen({ title, back, backLabel, tint = "primary", crumbs, children, after, titleAs: T = "h1", deskTitle = true }) {
+export default function Screen({ title, back, backLabel, tint = "primary", crumbs, children, after, titleAs: T = "h1", deskTitle = true, sub, right }) {
   return (
     <>
       {crumbs?.length > 0 && (
@@ -23,7 +23,8 @@ export default function Screen({ title, back, backLabel, tint = "primary", crumb
             <Icon name="arrow-back" size={24} />
           </Link>
         )}
-        <T className="stack-title">{title}</T>
+        <T className="stack-title">{title}{sub && <span className="stack-sub">{sub}</span>}</T>
+        {right}
       </div>
       {after}
       <div className="body">{children}</div>

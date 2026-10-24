@@ -4,10 +4,14 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import CIcon from "@/components/CIcon";
 import { splitPath, isActive } from "@/lib/paths";
+import { useCart } from "@/lib/client/cart";
+import { useSession } from "@/lib/client/session";
 
 /** Top navigation on wide screens. On phones the app-style bars are used instead. */
 export default function DesktopHeader({ lang, L, phone, phoneDisplay }) {
   const { path } = splitPath(usePathname());
+  const { itemCount } = useCart();
+  const session = useSession();
   const pre = lang === "en" ? "/en" : "";
   const to = (p) => (lang === "en" ? (p === "/" ? "/en" : `/en${p}`) : p);
   const other = lang === "en" ? path : path === "/" ? "/en" : `/en${path}`;
@@ -34,9 +38,11 @@ export default function DesktopHeader({ lang, L, phone, phoneDisplay }) {
             <CIcon name="language-outline" size={16} />{L.langSwitch}
           </Link>
           <a href={`tel:${phone}`} className="dcall"><CIcon name="call" size={16} /><span className="num">{phoneDisplay}</span></a>
-          <Link href={to("/cart")} className="round-btn" aria-label={L.cart}><CIcon name="cart-outline" size={21} /></Link>
+          <Link href={to("/cart")} className="round-btn" aria-label={L.cart} style={{ position: "relative" }}><CIcon name="cart-outline" size={21} />{itemCount > 0 && <span className="tab-badge" style={{ right: -4, top: -4 }}>{itemCount}</span>}</Link>
           <Link href={to("/activity")} className="round-btn" aria-label={L.activity}><CIcon name="receipt-outline" size={20} /></Link>
-          <Link href={to("/account")} className="round-btn avatar" aria-label={L.profile}><CIcon name="person" size={18} /></Link>
+          {session.ready && !session.loggedIn
+            ? <Link href={to("/login")} className="lang-pill"><CIcon name="log-in-outline" size={16} />{L.login}</Link>
+            : <Link href={to("/account")} className="round-btn avatar" aria-label={L.profile}><CIcon name="person" size={18} /></Link>}
         </div>
       </div>
     </header>

@@ -54,7 +54,7 @@ export default async function Home({ params }) {
 
   return (
     <>
-      <HomeTopBar lang={lang} L={{ brand: site.name[lang], activity: t(lang, "tabActivity"), profile: t(lang, "tabProfile") }} />
+      <HomeTopBar lang={lang} L={{ brand: site.name[lang], activity: t(lang, "tabActivity"), profile: t(lang, "tabProfile"), login: t(lang, "login") }} />
 
       <div className="body">
         <div className="home-grid">

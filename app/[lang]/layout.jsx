@@ -8,6 +8,7 @@ import "../globals.css";
 import DesktopHeader from "@/components/DesktopHeader";
 import TabBar from "@/components/TabBar";
 import SiteFooter from "@/components/SiteFooter";
+import { CartProvider } from "@/lib/client/cart";
 import site from "@/site.config";
 import { LANGS, isLang } from "@/lib/i18n";
 import { dict } from "@/lib/dict";
@@ -42,19 +43,21 @@ export default async function RootLayout({ children, params }) {
   const L = {
     brand: site.name[lang], navLabel: d.menu, langSwitch: d.langSwitch,
     home: t(lang, "tabHome"), doctor: t(lang, "wantDoctor"), medicine: t(lang, "wantMedicine"), caregiver: t(lang, "wantCaregiver"),
-    cart: t(lang, "tabCart"), activity: t(lang, "tabActivity"), profile: t(lang, "tabProfile"),
+    cart: t(lang, "tabCart"), activity: t(lang, "tabActivity"), profile: t(lang, "tabProfile"), login: t(lang, "login"),
     homeLabel: t(lang, "tabHome"), cartLabel: t(lang, "tabCart"), activityLabel: t(lang, "tabActivity"), tabsLabel: d.menu,
   };
   return (
     <html lang={lang === "bn" ? "bn-BD" : "en"}>
       <body>
         <a href="#main" className="skip">{d.skip}</a>
-        <div className="page">
-          <DesktopHeader lang={lang} L={L} phone={site.phone} phoneDisplay={site.phoneDisplay[lang]} />
-          <main id="main">{children}</main>
-          <SiteFooter lang={lang} />
-          <TabBar lang={lang} L={L} />
-        </div>
+        <CartProvider>
+          <div className="page">
+            <DesktopHeader lang={lang} L={L} phone={site.phone} phoneDisplay={site.phoneDisplay[lang]} />
+            <main id="main">{children}</main>
+            <SiteFooter lang={lang} />
+            <TabBar lang={lang} L={L} />
+          </div>
+        </CartProvider>
         <JsonLd data={organizationLd(lang)} />
       </body>
     </html>

@@ -6,6 +6,7 @@ import { href } from "@/lib/i18n";
 import { dict } from "@/lib/dict";
 import { t } from "@/lib/appText";
 import { pageMeta } from "@/lib/seo";
+import { AccountHeader, AccountActions } from "@/components/account/AccountPanel";
 
 export async function generateMetadata({ params }) {
   const { lang } = await params;
@@ -36,13 +37,7 @@ export default async function Account({ params }) {
   return (
     <Screen title={t(lang, "tabProfile")} back={href(lang, "/")} backLabel={d.backHome}>
       <div className="narrow">
-        <div className="card card-pad" style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
-          <span className="icircle tone-helper" style={{ width: 56, height: 56 }}><Icon name="person" size={26} color="var(--primary)" /></span>
-          <div style={{ flex: 1 }}>
-            <strong style={{ fontSize: 18, fontWeight: 800 }}>{d.guestTitle}</strong>
-            <p className="muted" style={{ fontSize: 14, marginTop: 2, lineHeight: 1.5 }}>{d.guestSub}</p>
-          </div>
-        </div>
+        <AccountHeader lang={lang} />
 
         <ul className="glist">
           <Row to={href(lang, "/activity")} icon="receipt-outline" title={t(lang, "profMyActivity")} />
@@ -65,6 +60,8 @@ export default async function Account({ params }) {
           <Row to={href(lang, "/delete-account")} icon="trash-outline" tone="danger" title={d.deleteAccount} />
           <Row ext to={site.playStoreUrl} icon="logo-google-playstore" title={d.appBtn} />
         </ul>
+
+        <AccountActions lang={lang} />
       </div>
     </Screen>
   );

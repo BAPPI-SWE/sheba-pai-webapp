@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Icon from "@/components/Icon";
 import { href } from "@/lib/i18n";
+import TopBarAuth from "@/components/TopBarAuth";
 
 /** HomeHubScreen's top bar: logo, "Sheba Pai — সেবা পাই —", bell and profile. */
 export default function HomeTopBar({ lang, L }) {
@@ -18,9 +19,7 @@ export default function HomeTopBar({ lang, L }) {
         <Link href={href(lang, "/activity")} className="round-btn press" aria-label={L.activity}>
           <Icon name="notifications-outline" size={22} />
         </Link>
-        <Link href={href(lang, "/account")} className="round-btn avatar press" aria-label={L.profile}>
-          <Icon name="person" size={18} />
-        </Link>
+        <TopBarAuth lang={lang} L={L} />
       </div>
     </div>
   );
