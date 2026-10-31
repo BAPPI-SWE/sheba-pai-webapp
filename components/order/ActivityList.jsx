@@ -47,7 +47,7 @@ export default function ActivityList({ lang }) {
 
   const all = [
     ...care.map((c) => ({
-      id: c._id, kind: "caregiver", href: null,
+      id: c._id, kind: "caregiver", href: `${pre}/caregiver/requests/${c._id}`,
       title: (lang === "bn" ? c.offerNameBangla || c.categoryNameBangla : c.offerName || c.categoryName) || c.requestedCaregiverName || tc("careGeneralRequest"),
       sub: c.caregiver?.name || `${tc("careBookingCode")}: ${c.code}`, st: CARE[c.status] || CARE.new, active: CARE_OPEN.includes(c.status),
       amount: c.agreedPrice ?? c.offerPrice, at: c.createdAt,

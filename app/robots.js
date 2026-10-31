@@ -1,6 +1,6 @@
 import site from "@/site.config";
 
-const PRIVATE = ["/account", "/cart", "/activity", "/login", "/checkout", "/order-placed", "/orders/"];
+const PRIVATE = ["/account", "/cart", "/activity", "/login", "/checkout", "/order-placed", "/orders/", "/caregiver/requests/"];
 
 export default function robots() {
   return {

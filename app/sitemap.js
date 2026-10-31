@@ -1,6 +1,7 @@
 import site from "@/site.config";
 import { href } from "@/lib/i18n";
 import { getJSON } from "@/lib/api";
+import { districtByName } from "@/lib/doctors";
 
 export const revalidate = 3600;
 
@@ -38,6 +39,18 @@ export default async function sitemap() {
   if (meds) {
     for (const g of meds.generics) out.push(...both(`/generic/${g.slug}`, 0.7, "monthly", g.updatedAt ? new Date(g.updatedAt) : new Date()));
     for (const m of meds.medicines) out.push(...both(`/medicine/${m.slug}`, 0.7, "weekly", m.updatedAt ? new Date(m.updatedAt) : new Date()));
+  }
+  // Caregiver pages: services, packages, and every district / care type that has caregivers (needs /api/care/sitemap, added in phase 4).
+  out.push(...both("/caregiver/urgent", 0.8, "weekly"), ...both("/caregiver/packages", 0.8, "weekly"), ...both("/caregiver/in", 0.7, "daily"));
+  const care = await getJSON("/api/care/sitemap", { fallback: null, timeoutMs: 20000 });
+  if (care) {
+    for (const c of care.categories) out.push(...both(`/caregiver/in/all/${c}`, 0.6, "weekly"));
+    for (const d of care.districts) {
+      const slug = districtByName(d.district)?.slug;
+      if (!slug) continue;
+      out.push(...both(`/caregiver/in/${slug}`, 0.7, "weekly"));
+      for (const c of d.categories) out.push(...both(`/caregiver/in/${slug}/${c}`, 0.6, "weekly"));
+    }
   }
   return out;
 }
